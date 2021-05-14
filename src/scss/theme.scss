@@ -1,0 +1,541 @@
+@import "reset";
+
+/** Main SCSS Variables **/
+
+//define base colors and modifiers
+$primary-color: #ff0440;
+$accent-color: #3f78c9;
+$light-color: #fafbfc;
+$dark-color: #1b1c1d;
+
+$lighten: 7;
+$darken: 13;
+
+//base layout
+$padding-md: 1em;
+$padding-sm: $padding-md / 2;
+$padding-lg: $padding-md * 2;
+
+$radius-md: 1em;
+$radius-sm: $radius-md / 2;
+$radius-lg: $radius-md * 2;
+
+$container-width-lg: 1440px;
+
+//font weight define
+$bold: 700;
+$bolder: 900;
+$default-font-size: 16pt;
+
+//transition speeds
+$transition-fast: 0.125s;
+$transition-normal: 0.2s;
+$transition-slow: 2.4s;
+
+$slider-size: 28px;
+
+//breakpoints
+$breakpoint-sm: 768px;
+
+//set colour map
+$colors: (
+	primary: (
+		base: $primary-color,
+		light: lighten($primary-color, $lighten),
+		dark: darken($primary-color, $darken),
+	),
+	accent: (
+		base: $accent-color,
+		light: lighten($accent-color, $lighten),
+		dark: darken($accent-color, $darken),
+	),
+	light: (
+		base: $light-color,
+		light: lighten($light-color, $lighten),
+		dark: darken($light-color, $darken),
+	),
+	dark: (
+		base: $dark-color,
+		light: lighten($dark-color, $lighten),
+		dark: darken($dark-color, $darken),
+	),
+);
+
+/** Functions & Mixins **/
+
+//get color map
+@function clr($base, $shade: base) {
+	$color: map-get(map-get($colors, $base), $shade);
+	@return $color;
+}
+
+//add transition
+@mixin transition($property: null, $speed, $type: null) {
+	@if $speed== "fast" {
+		transition: $property $transition-fast $type;
+	} @else if $speed== "slow" {
+		transition: $property $transition-slow $type;
+	} @else {
+		transition: all $transition-normal $type;
+	}
+}
+
+//Fonts
+@import url("https://fonts.googleapis.com/css2?family=Catamaran:wght@400;700;900&display=swap");
+
+/** CSS Variables for light/dark mode **/
+//light mode / default
+:root {
+	--foreground: #{clr(dark)};
+	--background: #{clr(light)};
+	--background-alt: #{clr(light, light)};
+	--nav-bg: #{lighten(clr(dark, dark), 8%)};
+	--primary: #{clr(primary)};
+	--primary-alt: #{clr(primary, light)};
+	--dark: #{clr(dark)};
+	--light: #{clr(light, light)};
+	--invertType: invert(0%);
+	--modal-bg: #{rgba(clr(dark), 0.9)};
+}
+
+//dark mode
+[data-theme="dark"] {
+	--foreground: #{clr(light)};
+	--background: #{clr(dark)};
+	--nav-bg: #{darken(clr(dark, dark), 50%)};
+	--background-alt: #{clr(dark, light)};
+	--primary: #{clr(primary)};
+	--primary-alt: #{clr(primary, light)};
+	--dark: #{lighten(clr(dark, dark), 7%)};
+	--light: #{clr(light, light)};
+	--invertType: invert(100%);
+	--modal-bg: #{rgba(clr(dark), 1)};
+}  
+
+body {
+	//@include transition(background-color, fast, ease-in);
+	font-family: "Catamaran", sans-serif;
+	background-color: var(--background);
+	font-size: $default-font-size;
+
+	// stop scrolling on body when modal is shown
+	&.has-modal {
+		overflow-y: hidden;
+	}
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-weight: normal;
+}
+
+h1 {
+	font-size: 2.5em;
+}
+
+h2 {
+	font-size: 2.15em;
+}
+
+a {
+	text-decoration: none;
+	color: var(--foreground);
+
+	&:hover {
+		color: var(--primary);
+	}
+}
+p {
+	font-size: .95em;
+}
+
+/** Background classes **/
+.bg-dark {
+	background-color: clr(dark);
+}
+
+.bg-light {
+	background-color: clr(light);
+}
+
+.bg-primary {
+	background-color: clr(primary);
+}
+
+/** Utility classes **/
+.container {
+	width: 100% !important; //override flexboxgrids container width, not sure why it's hard set
+	max-width: $container-width-lg;
+	@media screen and (max-width: 500px) {
+		padding: $padding-md;
+	}
+}
+
+.d-flex {
+	display: flex;
+}
+
+
+.text-subtle {
+	font-size: .95em;
+	color: lighten(clr(dark, light), 47);
+}
+
+.text-lighter {
+	color: white !important;
+}
+
+/** Component classes **/
+//cards
+.card {
+	@include transition(transform, fast, ease-out);
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	text-align: left;
+	height: 100%;
+	box-shadow: 0 6px 16px rgba(clr(dark), 0.08), 0 -3px 24px rgba(clr(dark), 0.09);
+	background-color: var(--background-alt);
+	color: var(--foreground);
+	border-radius: $radius-md;
+	padding: $padding-lg;
+	margin-top: $padding-md;
+	cursor: pointer;
+	// transition: all .2s ease-in;
+
+	&.active {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 99;
+	}
+
+	.card-title {
+		font-size: 1.3em;
+		line-height: 1.35;
+		font-weight: $bold;
+	}
+
+	.card-subtitle {
+		font-size: 0.75em;
+		font-weight: $bolder;
+		text-transform: uppercase;
+		color: clr(primary);
+	}
+
+	.card-description {
+		max-height: 20vh;
+		display: -webkit-box;
+		-webkit-line-clamp: 4;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.card-img {
+		width: 100%;
+		height: auto;
+	}
+
+	// adjust height of img on larger cards
+	&.card-large .card-img {
+		width: 75%;
+		margin: 0 auto;
+	}
+
+	.card-link {
+		display: flex;
+		flex-direction: row;
+		position: relative;
+		margin-top: auto;
+		color: var(--foreground);
+
+		// push link to other side
+		&.reverse-side {
+			margin-left: auto;
+		}
+	}
+
+	.card-link img {
+		transition: all .2s ease-in;
+		width: 32px;
+		margin-left: $padding-sm;
+		color: var(--foreground);
+		fill: var(--foreground);
+		filter: var(--invertType);
+	}
+
+	//flip image if side is reversed
+	.card-link.reverse-side img {
+		margin-left: 0;
+		margin-right: $padding-sm;
+		transform: scaleX(-1);
+	}
+	
+
+	&:after {
+		content: "";
+		position: absolute;
+		top: $padding-md;
+		right: $padding-md;
+		bottom: $padding-md;
+		left: $padding-md;
+		border: 1px var(--foreground) solid;
+		border-radius: $radius-md/2;
+	}
+
+	/** add hover effects **/
+	&:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 10px 22px rgba(clr(dark), 0.06), 0 1px 31px rgba(clr(dark), 0.07);
+	}
+
+	&:hover:after {
+		border: 1px var(--primary) solid;
+	}
+
+	&:hover .card-link {
+		color: var(--primary);
+	}
+
+	&:hover .card-link img {
+		transform: translateX(6px);
+	}
+
+	&:hover .card-link.reverse-side img {
+		transform: translateX(-6px) scaleX(-1);
+	}
+
+	// large view of card
+	&.card-large {
+		pointer-events: all; // enable pointer events for dismiss
+		height: auto; // unset height to enable scrolling
+
+	}
+
+	&.card-large:hover {
+		transform: none;
+	}
+
+	&.card-large:hover:after {
+		border: 1px solid var(--foreground);
+	}
+}
+
+// hero
+.hero {
+	//@include transition(background-color, fast, ease-in);
+	min-height: 70vh;
+	background: var(--dark);
+	color: var(--light);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+
+	.hero-cta {
+		font-weight: $bold;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		margin: $padding-lg auto;
+		color: var(--primary);
+	}
+
+	.hero-cta svg {
+		width: 32px;
+		margin-top: $padding-sm/2;
+	}
+
+	.hero-divide {
+		position: absolute;
+		bottom: 0;
+		width: 100%;
+		height: 10vw;
+
+		* {
+			//@include transition(fill, fast, ease-in);
+			fill: var(--background);
+		}
+	}
+
+	//Add padding so nav sits nicely on mobile
+	@media screen and (max-width: 768px) {
+		padding-top: 10vh;
+	}
+}
+
+//section
+.section {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 50vh;
+	margin-top: 12em;
+	padding-bottom: 4em;
+	background: var(--dark);
+	color: var(--light);
+
+	.section-divide {
+		position: absolute;
+		top: -9.9vw;
+		width: 100%;
+		height: 10vw;
+
+		* {
+			//@include transition(fill, fast, ease-in);
+			fill: var(--dark);
+		}
+	}
+	//small container box
+	.section-box {
+		line-height: 1.25;
+		svg,
+		img {
+			color: var(--primary);
+			width: 2em;
+			margin-top: 2.15em;
+		}
+
+		br + span {
+			display: inline-block;
+			margin-top: $padding-sm;
+		}
+	}
+	// Reset link colour and decoration only for sections
+	a {
+		color: currentColor;
+		text-decoration: underline;
+		&:hover {
+			color: var(--primary);
+		}
+	}
+}
+//nav
+.nav-top {
+	position: absolute;
+	background: var(--nav-bg);
+	top: 0;
+	z-index: 1;
+	width: 100%;
+}
+
+//modal
+.modal {
+	@include transition(all, fast, ease-in);
+	display: block;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	opacity: 0;
+	z-index: 10;
+	pointer-events: none;
+	background: var(--modal-bg);
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	visibility: hidden;
+	padding-bottom: $padding-lg;
+	overflow-y: auto;
+
+	&.show {
+		pointer-events: all;
+		opacity: 1;
+		visibility: visible;
+
+		.modal-content {
+			transform: translateY(0);
+		}
+	}
+}
+
+.modal-content {
+	padding-bottom: $padding-md;
+	transform: translateY(-200px);
+	transition: all ease-out .35s;
+}
+
+
+//Theme switch toggle
+.switch-wrapper {
+	display: flex;
+	flex-direction: row-reverse;
+	align-items: center;
+	justify-content: flex-start;
+	margin-left: auto;
+	height: 64px;
+
+	.switch-switch {
+		display: inline-block;
+		height: $slider-size;
+		position: relative;
+		width: $slider-size * 2;
+	}
+
+	.switch-switch input {
+		display: none;
+	}
+
+	.switch-label {
+		display: inline-block;
+		margin-right: $padding-sm;
+		font-size: 0.75em;
+		color: var(--light);
+	}
+
+	.slider {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		top: 0;
+		background-color: lighten(clr(dark, light), 15%);
+		cursor: pointer;
+		transition: 0.4s;
+	}
+
+	.slider:before {
+		content: "";
+		background-color: var(--light);
+		top: 50%;
+		transform: translateY(-50%);
+		height: $slider-size / 1.4;
+		left: 4px;
+		position: absolute;
+		transition: 0.4s;
+		width: $slider-size / 1.4;
+	}
+
+	input:checked + .slider {
+		background-color: $primary-color;
+	}
+
+	input:checked + .slider:before {
+		transform: translateY(-50%) translateX(($slider-size)-2);
+	}
+
+	.slider.round {
+		border-radius: 34px;
+	}
+
+	.slider.round:before {
+		border-radius: 50%;
+	}
+
+	//Add padding so nav sits nicely on mobile
+	@media screen and (max-width: 768px) {
+		height: 32px;
+	}
+}
