@@ -14,19 +14,22 @@ const body = document.getElementById('mainBody');
 		card1: {
 			category: "Information",
 			title: "Fitt's Law",
-			description: "The time to acquire a target is a function of the distance to and size of the target.",
+			description: "The amount of time needed to acquire a target is based on the target's size and distance from the starting point. ",
+			expanded: "",
 			img: "target.svg",
 		},
 		card2: {
 			category: "Decision",
 			title: "Hick's Law",
-			description: "The time it takes to make a decision increases with the number and complexity of choices.",
+			description: `The time and effort required to make a decision increases with the number and complexity of the options provided.`,
+			expanded: `In short, the more options given and the more complex said options are, the longer it will take for users to make their decision.`,
 			img: "decision.svg",
 		},
 		card3: {
 			category: "Decision",
 			title: "Sunk Cost Fallacy",
-			description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum porta, libero non tristique consectetur, ligula.",
+			description: "If a user has a previously invested interest they are more willing to continue investing regardless of the outcome.",
+			expanded: "This means previously invested resources - such as time, effort or money - will influence any future investments.",
 			img: "money_jar.svg",
 		},
 		card4: {
@@ -126,6 +129,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+//TODO: Switch to template literals at some point	
 function createModal(selectedcard) {
 	modalCard = cards[selectedcard.dataset.cardnumber];
 	let modalTemplate = [
@@ -134,6 +138,7 @@ function createModal(selectedcard) {
 				'<div class="card-title">'+ modalCard.title +'</div>',
 				'<img class="card-img" src="img/illus/'+ modalCard.img +'" alt="" srcset="" />',
 				'<p>' + modalCard.description + '</p>',
+				'<p>' + modalCard.expanded + '</p>',
 				'<div class="card-link reverse-side"><img src="img/icons/arrow-right.svg" alt="" srcset="" /> Dismiss</div>',
 			'</article>',
 	].join("\n");
